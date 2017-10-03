@@ -4,7 +4,7 @@
     
     <groupId>cz.mp.zxs.tools.tap2bas</groupId>
     <artifactId>zxs_tap2bas</artifactId>
-    <version>0.1</version>
+    <version>0.2_DEVEL</version>
     <name>zxs_tap2bas</name>
     
     <packaging>jar</packaging>
@@ -52,7 +52,7 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
-<!--                
+                <!--                
                 <includes>
                     <include>images/*</include>
                     <include>texts/*</include>
@@ -121,8 +121,10 @@
                     <descriptors>
                         <descriptor>src/assembly/dist-package.xml</descriptor>
                     </descriptors>
-                    
-                    <outputDirectory>${project.build.directory}/dist-package</outputDirectory>                                        
+                
+                    <appendAssemblyId>false</appendAssemblyId>
+                                                                                                    
+                    <outputDirectory>${project.build.directory}/dist-package</outputDirectory>                        
                 </configuration>
                 
                 <executions>
