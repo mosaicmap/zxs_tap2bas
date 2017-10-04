@@ -9,7 +9,7 @@ package cz.mp.zxs.tools.tap2bas;
 
 
 /**
- * Typ bloku v <i>tap</i> souboru.
+ * Typ bloku v TAP souboru.
  *
  * @author Martin Pokorný
  * @see Tap2bas

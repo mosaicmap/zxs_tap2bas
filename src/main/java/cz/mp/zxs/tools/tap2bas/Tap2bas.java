@@ -49,7 +49,7 @@ public class Tap2bas {
     
     protected static final int NAME_IN_HEADER_LEN = 10;
     protected static final int DEFAULT_HEADER_SIZE = 19;
-    protected static final int MIN_TAP_SIZE = DEFAULT_HEADER_SIZE + 3;  //(3 = 1B flag + 1B data + 1B parita) 
+    protected static final int MIN_TAP_SIZE = 2 + DEFAULT_HEADER_SIZE + 5;  // (2B za blocklen na začátku) (5 = 2B za blocklen na začátku dalšího bloku + 1B flag + 1B data + 1B parita) 
     
     public static final int FLAG_HEADER = 0;
     public static final int FLAG_DATA = 0xFF;
@@ -461,7 +461,7 @@ public class Tap2bas {
             else {
                 valid = false;
             }
-
+            
             if (!valid) {
                 writeToOut("Invalid data. Table of variables probably contains a machine code.");
                 writeToOut(" varId = 0x" + Integer.toHexString(varId) + "\n");
