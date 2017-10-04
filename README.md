@@ -14,10 +14,10 @@ And for more information about ZX Spectrum see article
 Note: This program is not able to disassemble a machine code data.
 
 
-<hr>
+-----
 
 ### Requirements
-* Java 7 or newer
+- Java 7 or newer
 
 ### How to built
 1. install *Java SE Development Kit (JDK)*, install *Apache Maven*, install *Netbeans IDE*
@@ -50,7 +50,7 @@ Note: This program is not able to disassemble a machine code data.
 <br>{TAB t}
 <br>(c = color number; b = value 0 or 1; y,x = coordinates in text mode; t = tab num)
 
-<hr>
+-----
 
 ### Simple example
 
