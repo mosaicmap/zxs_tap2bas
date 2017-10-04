@@ -4,7 +4,7 @@
     
     <groupId>cz.mp.zxs.tools.tap2bas</groupId>
     <artifactId>zxs_tap2bas</artifactId>
-    <version>0.2_DEVEL</version>
+    <version>0.1.1</version>
     <name>zxs_tap2bas</name>
     
     <packaging>jar</packaging>
