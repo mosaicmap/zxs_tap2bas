@@ -181,7 +181,7 @@ public class Tap2bas {
                     writeToOut(hexDump);
 
                     //writeToOut("\n"); // (ne \n, to už zapíše readBlockReturnAsHexDump)
-                    writeToOut("--- same data -- \"decadic\" dump: \n");
+                    writeToOut("--- same data -- \"decimal\" dump: \n");
                     tapContent.back(dataBlockLen - 2);
                     String decDump = tapContent.readBlockReturnAsDecadicDump(dataBlockLen - 2);
                     writeToOut(decDump);

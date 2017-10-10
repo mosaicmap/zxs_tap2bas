@@ -104,8 +104,8 @@ public final class Tap2basCli {
      * @param errCode 
      */
     private static void exitWithError(Exception ex, int errCode) {
-        log.error("Error: " + ex.getMessage(), ex);
-        perr("Error: " + ex.getMessage());
+        log.error("Error: " + ex.getClass().getName() + ": " + ex.getMessage(), ex);
+        perr("Error: " + ex.getClass().getName() + ": " + ex.getMessage());
         System.exit(errCode);
     }
 
@@ -153,6 +153,8 @@ public final class Tap2basCli {
                 .desc("output should contain only listings of BASIC programs")
                 .build();
         options.addOption(onlyBasic);                
+        
+        // --extractScr file
     }
     
     /**

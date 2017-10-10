@@ -14,9 +14,9 @@ package cz.mp.zxs.tools.tap2bas;
 public final class Version {
     
     public static final String VERSION_SPEC = 
-            Main.class.getPackage().getSpecificationVersion(); // viz pom.xml -> manifest.mf
+            Version.class.getPackage().getSpecificationVersion(); // viz pom.xml -> manifest.mf
     public static final String VERSION_IMPL = 
-            Main.class.getPackage().getImplementationVersion(); // viz pom.xml -> manifest.mf
+            Version.class.getPackage().getImplementationVersion(); // viz pom.xml -> manifest.mf
     public static final String VERSION;
     static {
         if (VERSION_SPEC == null || VERSION_SPEC.length() == 0) {
