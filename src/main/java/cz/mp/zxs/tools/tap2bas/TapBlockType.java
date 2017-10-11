@@ -18,7 +18,8 @@ public enum TapBlockType {
     BASIC(0, "BASIC program"),
     NUMBERS(1, "Data: numbers"),
     TEXTS(2, "Data: texts"),
-    CODE_OR_SCREEN(3, "Data: code or SCREEN$"),
+    CODE_OR_SCREEN(3, "Data: bytes"),   // SCREEN$ / Code / ...
+    
     ;
     int num;
     String description;
