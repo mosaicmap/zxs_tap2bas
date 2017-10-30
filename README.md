@@ -24,10 +24,10 @@ Note: This program is not able to disassemble a machine code data.
 2. open project in *Netbeans*.
 3. be sure you are connected to the Internet
 4. select "Clean and Build Project (Shift-F11)" in menu "Run".
-5. wait until *maven* download all dependecies and plugins. Then *maven* create build.
+5. wait until *maven* download all dependecies and plugins. Then *maven* will create build.
 6. result should be in directory: *target/dist-package*.
 
-<hr>
+-----
 
 ### Special characters format
 
