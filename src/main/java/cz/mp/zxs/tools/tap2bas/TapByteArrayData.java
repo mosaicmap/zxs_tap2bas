@@ -259,7 +259,7 @@ public class TapByteArrayData extends ByteArrayData {
                     sb.append((char)('1'+dataItem-0x81));  // 1-8, ne 0-7 !
                     sb.append("}");                        
                 }
-                // {+1} - {+8}  // (pozor, je ve znakové sadě v opačném pořadí)
+                // {+1} - {+7}  // (pozor, je ve znakové sadě v opačném pořadí)
                 else if (dataItem >= 0x88 && dataItem <= 0x8E) {
                     sb.append("{+");
                     sb.append((char)(0x8E-dataItem+'1'));  // 1-8, ne 0-7 !
