@@ -242,18 +242,27 @@ public class TapByteArrayData extends ByteArrayData {
                     throw new InvalidTapException("keyword = null");
                 }
                 sb.append(keyword);
-            }            
+            }        
+            // TODO
             // {-X} X is 1-8, characters 80-87 (block graphics without shift)
             // {+X} X is 1-8, characters 88-8F (block graphics with shift)            
             else if (isMosaicGraphicChar(dataItem)) {
-                if (dataItem >= 0x80 && dataItem <= 0x87) {
+                if (dataItem == 0x80) {
+                    sb.append("{-8}");
+                }
+                else if (dataItem == 0x8F) {
+                    sb.append("{+8}");
+                }                
+                // {-1} - {-7}
+                else if (dataItem >= 0x81 && dataItem <= 0x87) {
                     sb.append("{-");
-                    sb.append((char)('1'+dataItem-0x80));  // 1-8, ne 0-7 !
+                    sb.append((char)('1'+dataItem-0x81));  // 1-8, ne 0-7 !
                     sb.append("}");                        
                 }
-                if (dataItem >= 0x88 && dataItem <= 0x8F) {
+                // {+1} - {+8}  // (pozor, je ve znakové sadě v opačném pořadí)
+                else if (dataItem >= 0x88 && dataItem <= 0x8E) {
                     sb.append("{+");
-                    sb.append((char)('1'+dataItem-0x88));  // 1-8, ne 0-7 !
+                    sb.append((char)(0x8E-dataItem+'1'));  // 1-8, ne 0-7 !
                     sb.append("}");                        
                 }
             }            
@@ -347,19 +356,16 @@ public class TapByteArrayData extends ByteArrayData {
             mantisa = mantisa.add(new BigDecimal(rawValue[2]).divide(new BigDecimal("65536"), MathContext.DECIMAL64));
             mantisa = mantisa.add(new BigDecimal(rawValue[3]).divide(new BigDecimal("16777216"), MathContext.DECIMAL64));
             mantisa = mantisa.add(new BigDecimal(rawValue[4]).divide(new BigDecimal("4294967296"), MathContext.DECIMAL64));
-            BigDecimal result = mantisa;
-            
-//            double mantisa = 0.5d;
-//            mantisa += (rawValue[1] & 0x7F) / 256d;
-//            mantisa += rawValue[2] / 65536d;           // = 0xFFFF = 256^2
-//            mantisa += rawValue[3] / 16777216d;        // = 0xFFFFFF = 256^3
-//            mantisa += rawValue[4] / 4294967296d;      // = 0xFFFFFFFF = 256^4
-////            System.out.println("  mantisa=" + mantisa);
-//            BigDecimal result = new BigDecimal(mantisa);
+
+            //double mantisa = 0.5d;
+            //mantisa += (rawValue[1] & 0x7F) / 256d;
+            //mantisa += rawValue[2] / 65536d;           // = 0xFFFF = 256^2
+            //mantisa += rawValue[3] / 16777216d;        // = 0xFFFFFF = 256^3
+            //mantisa += rawValue[4] / 4294967296d;      // = 0xFFFFFFFF = 256^4
             
             // (pozn. 0x7f 0x7f 0xff 0xff 0xff není přesně 0.5!   0.5 = 0x80 0x0 0x0 0x0 0x0!)
             
-            result = result.multiply(new BigDecimal("2").pow(exp, MathContext.DECIMAL64));
+            BigDecimal result = mantisa.multiply(new BigDecimal("2").pow(exp, MathContext.DECIMAL64));
             if (sign != 0) {
                 result = result.negate();
             }
@@ -544,7 +550,7 @@ public class TapByteArrayData extends ByteArrayData {
     // (pozor v tokenech obsahující mezeru (např. v GO TO apod) nesmí být nezalomitelné mezery)
     /**
      */
-    private static final void initZxsKeywordsMap() {
+    private static void initZxsKeywordsMap() {
         keywords.put(0xA5,"RND ");
         keywords.put(0xA6,"INKEY$ ");
         keywords.put(0xA7,"PI ");

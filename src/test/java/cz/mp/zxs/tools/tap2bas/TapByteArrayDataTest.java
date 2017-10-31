@@ -40,12 +40,12 @@ public class TapByteArrayDataTest {
         rawData = new byte[] {(byte)0x48, 
                 (byte)0x65, (byte)0x6C, (byte)0x6C, (byte)0x6F,
                 (byte)0x20, (byte)0x7F, (byte)0x20, 
-                (byte)0x80, (byte)0x81, (byte)0x88};
+                (byte)0x80, (byte)0x81, (byte)0x8D, (byte)0x8E, (byte)0x8F};
         tData = new TapByteArrayData(rawData);
         try {
             text = tData.readBlockAndReturnAsEscapedString(rawData.length);
             //System.out.println("\"" + text + "\"");
-            assertEquals("Hello {(C)} {-1}{-2}{+1}", text);
+            assertEquals("Hello {(C)} {-8}{-1}{+2}{+1}{+8}", text);
         } catch (InvalidTapException ex) {
             fail(ex.getMessage());
         }   
