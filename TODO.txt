@@ -1,18 +1,4 @@
 
-- chyby:
-
-    ! chyba  Error: 40638 -- co to je? jak jí přeskočit?
-    17:46:46  SEVERE: cz.mp.zxs.tools.tap2bas.Tap2basCli exitWithError  > Error: 40638 
-    java.lang.ArrayIndexOutOfBoundsException: 40638
-    	at cz.mp.zxs.tools.tap2bas.ByteArrayData.read(ByteArrayData.java:56)
-    	at cz.mp.zxs.tools.tap2bas.TapByteArrayData.readBlockAndReturnAsEscapedString(TapByteArrayData.java:195)
-    	at cz.mp.zxs.tools.tap2bas.Tap2bas.analyzeBasicBlock(Tap2bas.java:359)
-    	at cz.mp.zxs.tools.tap2bas.Tap2bas.processTap(Tap2bas.java:174)
-    	at cz.mp.zxs.tools.tap2bas.Tap2bas.analyzeAndExtractBasic(Tap2bas.java:89)
-    	at cz.mp.zxs.tools.tap2bas.Tap2basCli.executeTap2basWithOpts(Tap2basCli.java:282)
-    	at cz.mp.zxs.tools.tap2bas.Tap2basCli.executeWithArgs(Tap2basCli.java:323)
-    	at cz.mp.zxs.tools.tap2bas.Main.main(Main.java:23)
-
 
 - volba pro extrakci SCR souboru(souborů), pokud v TAP je(jsou)
   (pozná se podle přesné délky a podle adresy (param v hlavičce))
