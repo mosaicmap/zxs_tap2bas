@@ -22,7 +22,7 @@
     
     <fileSets>   
         <fileSet>
-            <directory>${project.basedir}/src/main/resources/res4dist/</directory>
+            <directory>${project.basedir}/src/res4dist/</directory>
             <outputDirectory/>
             <includes>
                 <include>*.bat</include>
@@ -31,7 +31,7 @@
         </fileSet>
     
         <fileSet>
-            <directory>${project.basedir}/src/main/resources/res4dist/</directory>
+            <directory>${project.basedir}/src/res4dist/</directory>
             <outputDirectory/>
             <includes>
                 <include>*.sh</include>
@@ -41,7 +41,7 @@
         </fileSet>
         
         <fileSet>
-            <directory>${project.basedir}/src/main/resources/res4dist/</directory>
+            <directory>${project.basedir}/src/res4dist/</directory>
             <outputDirectory/>
             <excludes>
                 <exclude>*.bat</exclude>

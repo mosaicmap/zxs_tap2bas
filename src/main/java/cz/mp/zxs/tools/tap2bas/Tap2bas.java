@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Analyzuje TAP soubor a část s BASICem pro ZX Spectrum převede do čitelné formy.
- * Převod TAP souboru pro jiné systémy(značky počítačů) nebude fungovat.
+ * Převod TAP souboru pro jiné systémy/platformy/značky počítačů  nebude fungovat.
  * <p>
  * Viz popis TAP souboru, např:<ul>
  * <li><a href="https://faqwiki.zxnet.co.uk/wiki/TAP_format">TAP format na ZXS FAQ Wiki</a>,</li>
@@ -68,6 +68,10 @@ public class Tap2bas {
     public static final int SCREEN_WIDTH = 256;     // px ... = 32 * 8
     public static final int SCREEN_HEIGHT = 192;    // px     = 24 * 8
     
+    private static final int MAX_VARS_DATA_LEGTH = 49152; // 48*1024 = 48kiB = celá RAM ZX Spectra
+    // (? je toto opravdu omezeno, nebo jsem si to dříve vymyslel ? Aneb příště psát komentář ...)
+    private static final int MAX_VARS_ARRAY_DIM = 4;
+
     
     /** */
     public Tap2bas() {
@@ -75,7 +79,7 @@ public class Tap2bas {
 
 
     /**
-     * Provede analýzu TAP, do výstupu zapíše pouze výpisy BASIC proramů.
+     * Provede analýzu TAP, do výstupu zapíše pouze výpisy BASIC programů.
      * 
      * @throws IOException
      * @throws InvalidTapException 
@@ -83,10 +87,11 @@ public class Tap2bas {
      * @see #setInFile(java.io.File) 
      * @see #setOutWriter(java.io.Writer) 
      */
-    public void analyzeAndExtractBasic()
+    public void analyzeAndExtractOnlyBasic()
             throws IOException, InvalidTapException {
         boolean onlyBasic = true;
-        processTap(onlyBasic);      
+        boolean analyzeVars = false;
+        processTap(onlyBasic, analyzeVars);      
     }
     
     /**
@@ -107,20 +112,46 @@ public class Tap2bas {
     public void analyzeAll()
             throws IOException, InvalidTapException {
         boolean onlyBasic = false;
-        processTap(onlyBasic);
+        boolean analyzeVars = true;
+        processTap(onlyBasic, analyzeVars);
     }
+    
+    /**
+     * Provede analýzu TAP, do výstupu vypíše všechny bloky TAP.
+     * BASIC bloky převede na výpis programu v Basicu ZXS,
+     * pokud je v některém BASIC bloku tabulka proměných, vypíše ji pouze jako
+     * {@code hexdump}. Ostatní typu bloků vypíše
+     * jako {@code hexdump} a {@code 'decadic' dump}.
+     * Ke každému bloku vypíše také hlavičku.
+     * 
+     * @return
+     * @throws IOException 
+     * @throws InvalidTapException
+     * @throws IllegalStateException
+     * @see #setInFile(java.io.File) 
+     * @see #setOutWriter(java.io.Writer) 
+     */
+    public void analyzeWithoutVars()
+            throws IOException, InvalidTapException {
+        boolean onlyBasic = false;
+        boolean analyzeVars = false;
+        processTap(onlyBasic, analyzeVars);
+    }    
     
     /**
      * 
      * @param onlyBasic  pokud je {@code true}, zapíše se na výstup jen výpis
      *      BASIC programů. Pro {@code false} se na výstup zapíše calá analýza.
+     * @param analyzeVars  
+     * 
      * @throws IOException
      * @throws InvalidTapException 
      * @throws IllegalStateException
      * @see #setInFile(java.io.File) 
      * @see #setOutWriter(java.io.Writer) 
+     * @see #analyzeBasicBlock(int, boolean, boolean) 
      */
-    private void processTap(boolean onlyBasic) 
+    private void processTap(boolean onlyBasic, boolean analyzeVars) 
             throws IOException, InvalidTapException {
         if (tapContent == null || tapContent.isEmpty()) {
             throw new IllegalStateException("tapContent is blank");
@@ -131,7 +162,14 @@ public class Tap2bas {
             int blockLen = tapContent.readLsbMSB();
             //log.debug("blockLen = " + blockLen);
             if (blockLen != DEFAULT_HEADER_SIZE) {
-                throw new InvalidTapException("Invalid header size");
+                // (chyba mi většinou vznikala pokud se do analýzy VARS 
+                //  začlenila i následují data. Teď se při chybě VARS 
+                //  posunuje index v tapConten na správné místo)
+                log.warn("Invalid header size. blockLen = " + blockLen);
+                if (!onlyBasic) {
+                    writeToOut("\nERROR: Invalid header size. blockLen = " + blockLen);
+                }
+                throw new InvalidTapException("Invalid header size. blockLen = " + blockLen);
             }
                     
             TapBlockType typeFromHeader;
@@ -171,7 +209,7 @@ public class Tap2bas {
                 }
 
                 if (typeFromHeader == TapBlockType.BASIC) {
-                    analyzeBasicBlock(dataBlockLen - 1, onlyBasic);  // 1B za již načtený flag
+                    analyzeBasicBlock(dataBlockLen - 1, onlyBasic, analyzeVars);  // 1B za již načtený flag
                 }
                 else if (onlyBasic) {
                     tapContent.skip(dataBlockLen - 1);
@@ -277,10 +315,12 @@ public class Tap2bas {
      * @param onlyBasic  pokud je {@code true}, zapíše se na výstup jen výpis
      *      BASIC programů. Pro {@code false} se na výstup zapíše i 
      *      tabulka proměnných, pokud ji BASIC blok obsahuje.
+     * @param analyzeVars
      * @throws IOException
      * @throws InvalidTapException
+     * @see #processTap(boolean, boolean) 
      */
-    private void analyzeBasicBlock(int dataLen, boolean onlyBasic) 
+    private void analyzeBasicBlock(int dataLen, boolean onlyBasic, boolean analyzeVars) 
             throws IOException, InvalidTapException {
         log.debug("dataLen = " + dataLen);
         
@@ -295,8 +335,7 @@ public class Tap2bas {
             //log.debug("lineNum = " + lineNum + "   0x" + Integer.toHexString(lineNum));
             
             // Řádka 0 se někdy vyskytuje. 
-            //  (Často jde o ochranu Basic programu, někdy o komentář s (c)
-            //  (Řádku 0 šlo smazat jen speciálním programem a nebyla vidět vy výpisu programu)
+            //  (Často jde o nesmazatelný (běžným způsobem) komentář s Copyright info)
 
             // 0 - 9999 (=0x270F)  -->  PROG -- BASIC program line number
             // 0x41xx - 0xFAxx  -->  VARS -- tabulka proměnných - definice typu, hodnoty atd.
@@ -323,7 +362,7 @@ public class Tap2bas {
                 }
                 
                 writeToOut("--- table of variables (VARS) -- hexdump: \n");                
-                // VARS jen jako hexdump
+                // VARS jen jako hexdump;  (decdump není užitečný)
                 String hexDump = tapContent.readBlockReturnAsHexDump(varsLength);
                 writeToOut("    length = ");
                 writeIntToOut(varsLength);
@@ -333,17 +372,25 @@ public class Tap2bas {
                     fout.flush();
                 }                
                 
-                // VARS znovu, ale tentokrát jako analýza
-                writeToOut("--- table of variables (VARS) -- analyzed: \n");
-                tapContent.back(varsLength);
-                boolean validTable = analyzeVarsTable(varsLength);                
-                if (!validTable) {
-                    throw new InvalidTapException("Invalid table of variables");
+                if (analyzeVars) {
+                    log.info("analyzeVars");
+                    // VARS znovu, ale tentokrát jako analýza
+                    writeToOut("--- table of variables (VARS) -- analyzed: \n");
+                    tapContent.back(varsLength);
+
+                    boolean validTable = analyzeVarsTable(varsLength);
+                    if (!validTable) {                    
+                        log.info("!validTable");
+                        // NE: throw new InvalidTapException("Invalid table of variables");
+                        writeToOut("ERROR: Invalid table of variables");
+                        // (posun idx v tapContent v metodě analyzeVarsTable)
+                    }
+
+                    if (fout != null) {
+                        fout.flush();
+                    }                
                 }
                 
-                if (fout != null) {
-                    fout.flush();
-                }                
                 break;   // (tabulka proměnných je na konci, po analýze skončit)
             }
             
@@ -368,9 +415,6 @@ public class Tap2bas {
         tapContent.skip(1);     // ! a ten 1B za "checksum" na konci
     }
 
-    
-    private static final int MAX_VAR_DATA_LEGTH = 49152; // 48*1024 = 48kiB = celá RAM ZX Spectra
-    private static final int MAX_VAR_ARRAY_DIM = 4;
     
     /**
      * Analyzuje tabulku proměnných na konci BASIC bloku v TAP.
@@ -430,8 +474,10 @@ public class Tap2bas {
         
         int startIdx = tapContent.getIdx();
         // (tapContent.getIdx() - startIdx  = počet načtených bytů)
-        while (tapContent.getIdx() - startIdx < dataLen) {
-            
+        int lenToEnd;
+        while (valid && 
+                (lenToEnd = dataLen - (tapContent.getIdx() - startIdx)) > 0) {
+                    
             int varId = tapContent.read();  // (z identifikace se i odvozuje první znak proměnné, viz analyzeVar*)
             // ----- řetězec (počet znaků v řetězci + 3 B)
             if (varId >= 0x41 && varId <= 0x5A) {       // = 'A' - 'Z'
@@ -439,7 +485,12 @@ public class Tap2bas {
             }
             // ----- proměnná označená jedním písmenem (6 B)
             else if (varId >= 0x61 && varId <= 0x7A) {
-                valid = analyzeVarOneCharName(varId);                
+                if (lenToEnd < 6) {
+                    valid = false;
+                }
+                else {
+                    valid = analyzeVarOneCharName(varId);
+                }
             }
             // ----- číslicové pole (počet prvků * 5  + počet rozměrů * 2  + 4)
             else if (varId >= 0x81 && varId <= 0x9A) {
@@ -455,26 +506,32 @@ public class Tap2bas {
             }
             // ----- řídící proměnná cyklu for (19 B)
             else if (varId >= 0xE1 && varId <= 0xFA) {
-                valid = analyzeVarForLoop(varId);                
+                if (lenToEnd < 19) {
+                    valid = false;
+                }
+                else {
+                    valid = analyzeVarForLoop(varId);                
+                }
             }
             // ----- (cokoliv jiného = chyba)
             else {
                 valid = false;
             }
-            
-            if (!valid) {
-                writeToOut("Invalid data. Table of variables probably contains a machine code.");
-                writeToOut(" varId = 0x" + Integer.toHexString(varId) + "\n");
-                log.warn("Invalid data. Table of variables probably contains a machine code. ");
-                log.warn("varId = 0x" + Integer.toHexString(varId));
-                int readed = tapContent.getIdx() - startIdx;
-                int skip = dataLen - (tapContent.getIdx() - startIdx);
-                log.info("readed: " + readed + " B");
-                tapContent.skip(skip);
-                log.info("skipped: " + skip + " B");
-                break;  // !
-            }
         } 
+        
+        if (!valid) {
+            writeToOut("Invalid data. Table of variables probably contains a machine code. ");
+            writeToOut("Byte at: 0x" + Integer.toHexString(tapContent.getIdx()) + "\n");
+            log.warn("Invalid data. Table of variables probably contains a machine code. ");
+            log.warn("Byte at: 0x" + Integer.toHexString(tapContent.getIdx()));
+            int readed = tapContent.getIdx() - startIdx;
+            log.info("readed: " + readed + " Bytes");
+
+            // skočit až na konec
+            log.info("Skip Table of variables");
+            tapContent.setIdx(startIdx + dataLen);            
+        }
+        
         return valid;
     }
     
@@ -554,13 +611,13 @@ public class Tap2bas {
         writeToOut(":  ");
 
         int datalen = tapContent.readLsbMSB();
-        if (datalen > MAX_VAR_DATA_LEGTH) {
+        if (datalen > MAX_VARS_DATA_LEGTH) {
             return false;
         }
         
         // počet rozměrů
         int dimensions = tapContent.read();
-        if (dimensions <= 0 || dimensions > MAX_VAR_ARRAY_DIM) {
+        if (dimensions <= 0 || dimensions > MAX_VARS_ARRAY_DIM) {
             log.warn("dimensions = \"" + dimensions + "\"");
             return false;
         }
@@ -582,7 +639,7 @@ public class Tap2bas {
             dimSizes[k] = size;
             totalItemsCount = totalItemsCount * size;
         }
-        if (totalItemsCount > MAX_VAR_DATA_LEGTH) {
+        if (totalItemsCount > MAX_VARS_DATA_LEGTH) {
             log.warn("totalItemsCount = \"" + totalItemsCount + "\"");
             return false;
         }
@@ -665,14 +722,14 @@ public class Tap2bas {
         writeToOut(" = ");
 
         int datalen = tapContent.readLsbMSB();
-        if (datalen > MAX_VAR_DATA_LEGTH) {
+        if (datalen > MAX_VARS_DATA_LEGTH) {
             log.warn("datalen = \"" + datalen + "\"");
             return false;
         }
         
         // počet rozměrů
         int dimensions = tapContent.read();
-        if (dimensions <= 0 || dimensions > MAX_VAR_ARRAY_DIM) {
+        if (dimensions <= 0 || dimensions > MAX_VARS_ARRAY_DIM) {
             log.warn("dimensions = \"" + dimensions + "\"");
         //    return false;
         }
@@ -686,7 +743,7 @@ public class Tap2bas {
         int itemsCount = 1;
         for (int k=0; k<dimensions; k++) {
             int size = tapContent.readLsbMSB();
-            if (size > MAX_VAR_DATA_LEGTH) {
+            if (size > MAX_VARS_DATA_LEGTH) {
                 return false;
             }
             writeToOut("    dim ");

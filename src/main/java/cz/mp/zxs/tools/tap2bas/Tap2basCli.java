@@ -41,6 +41,7 @@ public final class Tap2basCli {
     private String optInputFileName = null;
     private String optOutFileName = null;        
     private boolean optOnlyBasic = false;
+    private boolean optVarsAnalyze = false;
 
     private Tap2bas tap2bas = new Tap2bas();
 
@@ -54,7 +55,7 @@ public final class Tap2basCli {
      */
     private void printHelp() {
         log.info("");
-        pout("Does elementary analysis of a TAP file for Sinclair ZX Spectrum.");
+        pout("Performs elementary analysis of a Sinclair ZX Spectrum TAP file.");
         pout("Converts BASIC blocks to listing readable for humans.");
         pout("Usage:");
         pout("  java -jar zxs_tap2bas.jar [options...]");
@@ -142,7 +143,8 @@ public final class Tap2basCli {
         Option outFileName = Option.builder("o")
                 .hasArg(true)
                 .required(false)
-                .desc("output file name. If it is not specified, output is made to stdout.")
+                .desc("output file name. If it is not specified, "
+                        + "the output is made to stdout.")
                 .build();
         options.addOption(outFileName);
 
@@ -150,9 +152,19 @@ public final class Tap2basCli {
                 .longOpt("onlyBasic")
                 .hasArg(false)
                 .required(false)
-                .desc("output should contain only listings of BASIC programs")
+                .desc("output will contain only listings of BASIC programs")
                 .build();
-        options.addOption(onlyBasic);                
+        options.addOption(onlyBasic);          
+                
+        Option analyzeVars = Option.builder()
+                .longOpt("analyzeVars")
+                .hasArg(false)
+                .required(false)
+                .desc("try to analyze a VARS part of the BASIC block "
+                        + "if the block is present. "
+                        + "(Note: \"onlyBasic\" option disable this option.)")
+                .build();
+        options.addOption(analyzeVars);                
         
         // --extractScr file
     }
@@ -188,9 +200,14 @@ public final class Tap2basCli {
                 optOutFileName = commandLine.getOptionValue("o");
                 log.info("-o = " + optOutFileName);
             }
+            if (commandLine.hasOption("analyzeVars")) {
+                log.info("--analyzeVars");
+                optVarsAnalyze = true;
+            }
             if (commandLine.hasOption("onlyBasic")) {
                 log.info("--onlyBasic");
                 optOnlyBasic = true;
+                optVarsAnalyze = false;
             }
         }
         catch (ParseException pex) {
@@ -240,7 +257,7 @@ public final class Tap2basCli {
             // (asi není nutná)
             if (hasFileForbiddedExt(optOutFileName.toLowerCase())) {
                 exitWithError("output file has forbidden extension", RESULT_ERR_OPTS);
-            }                
+            }               
         }        
     }
     
@@ -268,7 +285,8 @@ public final class Tap2basCli {
      * Vykoná {@code Tap2bas} se zadanými parametry.
      * 
      */
-    private void executeTap2basWithOpts() {        
+    private void executeTap2basWithOpts() {
+        log.debug("");
         validateOptValuesForTap2bas();  // (pokud jsou parametry zadány špatně, tak ukončí program)
         
         try {        
@@ -277,25 +295,37 @@ public final class Tap2basCli {
                 tap2bas.setOutFile(null);
             }
             else {
-                tap2bas.setOutFile(new File(optOutFileName));
+                File optOutFile = new File(optOutFileName);
+                File optOutDir = optOutFile.getParentFile();
+                boolean createdDir = optOutDir.mkdirs();
+                if (createdDir) {
+                    log.info("Created directory for: " + optOutFileName);
+                }
+
+                tap2bas.setOutFile(optOutFile);
             }
 
             if (optOnlyBasic) {
-                tap2bas.analyzeAndExtractBasic();
+                tap2bas.analyzeAndExtractOnlyBasic();
+            }
+            else if (optVarsAnalyze) {
+                tap2bas.analyzeAll();
             }
             else {
-                tap2bas.analyzeAll();
+                tap2bas.analyzeWithoutVars();
             }            
             
             closeTap2basOutWriter();
         } catch (InvalidTapException ex) {
+            log.info(ex.getMessage(), ex);
             closeTap2basOutWriter();
             exitWithError(ex, RESULT_ERR_TAP_FORMAT);
         } catch (Exception ex) {
+            log.info(ex.getMessage(), ex);
             closeTap2basOutWriter();
             exitWithError(ex, RESULT_ERR_GENERAL);
         } finally {
-            // NE! Po System.exit(num) by nenastalo!
+            // NE!  pokud se zavolá System.exit, toto se nevykoná !
         }        
     }
     

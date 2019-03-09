@@ -39,6 +39,10 @@ public class ByteArrayData {
     public int getIdx() {
         return idx;
     }
+
+    public void setIdx(int i) {
+        idx = i;
+    }
     
     public void back(int i) {
         idx-=i;
@@ -47,10 +51,6 @@ public class ByteArrayData {
     public void skip(int i) {
         idx+=i;
     }
-    
-//    public void gotoIdx(int i) {
-//        idx = i;
-//    }
     
     public int read() {
         return data[idx++] & 0xFF;

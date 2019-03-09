@@ -2,17 +2,16 @@
 zxs_tap2bas
 ===========
 
-This program analyses TAP data file for ZX Spectrum. Converts BASIC blocks to listing in human-readable form. 
+This program analyses ZX Spectrum TAP data file. Converts BASIC blocks to listing in human-readable form.
+
+*This is a tool for software archaeologists.*
+
+Note: This program is not able to disassemble machine code data.
 
 For more information about BASIC for ZX Spectrum see article
 [Sinclair BASIC on Wikipedia](https://en.wikipedia.org/wiki/Sinclair_BASIC)
 And for more information about ZX Spectrum see article
 [ZX Spectrum](https://en.wikipedia.org/wiki/ZX_Spectrum).
-
-*This is tool for software archaeologists.*
-
-Note: This program is not able to disassemble a machine code data.
-
 
 -----
 
@@ -20,16 +19,22 @@ Note: This program is not able to disassemble a machine code data.
 - Java 7 or newer
 
 ### How to built
-1. install *Java SE Development Kit (JDK)*, install *Apache Maven*, install *Netbeans IDE*
-2. open project in *Netbeans*.
-3. be sure you are connected to the Internet
-4. select "Clean and Build Project (Shift-F11)" in menu "Run".
-5. wait until *maven* download all dependecies and plugins. Then *maven* will create build.
-6. result should be in directory: *target/dist-package*.
+1. install *Java SE Development Kit (JDK)*, 
+2. install *Apache Maven*, install *Netbeans IDE*
+3. open project in *Netbeans*.
+4. be sure you are connected to the Internet
+5. select *Default config*
+6. select "Clean and Build Project (Shift-F11)" in the menu "Run".
+7. wait until *maven* download all dependencies and plugins. Then *maven* will create the build.
+8. result should be in the directory: *target/dist-package*.
+
+Instead of steps 2 - 7 you can simply run command: >*mvn package*
 
 -----
 
 ### Special characters format
+
+Format is compatible with tool called **bas2tap**. 
 
 * UDG characters<br>{A}, {B}, ..., {T}
 
@@ -48,7 +53,7 @@ Note: This program is not able to disassemble a machine code data.
 <br>{OVER b}
 <br>{AT y,x}
 <br>{TAB t}
-<br>(c = color number; b = value 0 or 1; y,x = coordinates in text mode; t = tab num)
+<br><br>(c = color number; b = value 0 or 1; y,x = coordinates in text mode; t = tab num)
 
 -----
 

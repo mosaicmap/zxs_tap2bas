@@ -4,7 +4,7 @@
     
     <groupId>cz.mp.zxs.tools.tap2bas</groupId>
     <artifactId>zxs_tap2bas</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
     <name>zxs_tap2bas</name>
     
     <packaging>jar</packaging>
@@ -47,28 +47,25 @@
     
     <build>
         <finalName>${project.artifactId}</finalName>
-        
+
+        <!--        
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
-                <!--                
                 <includes>
-                    <include>images/*</include>
-                    <include>texts/*</include>
                 </includes>
-                -->
                 <excludes>
-                    <exclude>res4dist/</exclude>
                 </excludes>
             </resource>
         </resources>
-        
-        
+        -->
+                
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <source>${maven.compiler.source}</source>
@@ -78,16 +75,15 @@
             
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>        
             
-            
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <addMavenDescriptor>true</addMavenDescriptor>

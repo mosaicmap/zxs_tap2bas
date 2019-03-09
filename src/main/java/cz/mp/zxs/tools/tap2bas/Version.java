@@ -8,6 +8,7 @@
 package cz.mp.zxs.tools.tap2bas;
 
 /**
+ * Verze programu. Zde se bere verze z manifest.mf, který je generovaný pom.xml.
  *
  * @author Martin Pokorný
  */

@@ -16,7 +16,7 @@ import java.util.TreeMap;
 /**
  * Třída pro práci s polem dat. 
  * Oproti {@linkplain ByteArrayData} obsahuje navíc metody použitelné 
- * pravděpodobně pouze (nebo hlavně) pro analýzu Tap souboru pro ZX Spectrum.
+ * pravděpodobně pouze (nebo hlavně) pro analýzu TAP souboru pro ZX Spectrum.
  * <p>
  * <em>Pozor, neprovádí kontroly na přetečení!</em> Např. 
  * v metodách: {@code read*()}, {@code skip()}, {@code back()}!
@@ -52,6 +52,8 @@ public class TapByteArrayData extends ByteArrayData {
         super(data);    
     }
 
+    private static final int DEFAULT_SB_SIZE = 8192;
+    
     /**
      * Načte data zadané délky a vrátí je formátované jako "decadicDump".
      * <p>
@@ -61,7 +63,7 @@ public class TapByteArrayData extends ByteArrayData {
      * @return 
      */
     public String readBlockReturnAsDecadicDump(int length) {
-        StringBuilder sb = new StringBuilder(8192); // 4096
+        StringBuilder sb = new StringBuilder(DEFAULT_SB_SIZE);
         
         final int LINE_LEN = 8;
         int i = 0;
@@ -99,7 +101,7 @@ public class TapByteArrayData extends ByteArrayData {
      * @return 
      */
     public String readBlockReturnAsHexDump(int length) {
-        StringBuilder sb = new StringBuilder(4096);
+        StringBuilder sb = new StringBuilder(DEFAULT_SB_SIZE);
         
         final int LINE_LEN = 16;
         int i = 0;
@@ -179,6 +181,8 @@ public class TapByteArrayData extends ByteArrayData {
     }          
 
     /**
+     * .
+     * Escape značky ve formátu programu {@code bas2tap}.
      * 
      * @param length
      * @return 
@@ -189,7 +193,7 @@ public class TapByteArrayData extends ByteArrayData {
         if(length < 0) {
             throw new IllegalArgumentException("length");
         }
-        StringBuilder sb = new StringBuilder(256);
+        StringBuilder sb = new StringBuilder(length * 2);
         int i=0;
         while (i < length) {
             int dataItem = read();
@@ -243,7 +247,7 @@ public class TapByteArrayData extends ByteArrayData {
                 }
                 sb.append(keyword);
             }        
-            // TODO
+
             // {-X} X is 1-8, characters 80-87 (block graphics without shift)
             // {+X} X is 1-8, characters 88-8F (block graphics with shift)            
             else if (isMosaicGraphicChar(dataItem)) {
@@ -266,6 +270,7 @@ public class TapByteArrayData extends ByteArrayData {
                     sb.append("}");                        
                 }
             }            
+
             // {X} X is 'A'-'U', converts to the UDG Spectrum ASCII value
             else if (isUdgChar(dataItem)) {
                 sb.append("{").append((char)('A'+dataItem-0x90)).append("}");
@@ -453,7 +458,7 @@ public class TapByteArrayData extends ByteArrayData {
     }
     
     /**
-     * Znak je řídící znak pro začátek čísla ve vnitřní reprezentaci basicu 
+     * Znak je řídící znak pro začátek čísla ve vnitřní reprezentaci BASICu, 
      * (0x0E + 5B).
      * 
      * @param data
@@ -496,7 +501,7 @@ public class TapByteArrayData extends ByteArrayData {
     }
     
     /**
-     * znak "čtverečky".
+     * Znak z mozaikové grafiky.
      * 
      * @param data
      * @return 
@@ -506,7 +511,7 @@ public class TapByteArrayData extends ByteArrayData {
     }
     
     /**
-     * uživatelem definovaný znak -- UDG.
+     * Znak je "uživatelem definovaný znak" (UDG).
      * 
      * @param data
      * @return 
@@ -516,7 +521,7 @@ public class TapByteArrayData extends ByteArrayData {
     }
 
     /**
-     * klíčové slovo basicu.
+     * Znak je klíčové slovo BASICu.
      * 
      * @param data
      * @return 
@@ -526,9 +531,10 @@ public class TapByteArrayData extends ByteArrayData {
     }    
 
     /**
+     * Získá textovou reprezentaci znaku klíčového slova BASICu.
      * 
      * @param data
-     * @return text nebo {@code null}
+     * @return  text nebo {@code null}
      */
     public static final String getKeyword(int data) {
         return keywords.get(data);

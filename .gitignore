@@ -23,4 +23,8 @@ hs_err_pid*
 _tmp/
 _temp/
 _info_tmp/
+_chyby/
 
+.settings/
+.project
+.classpath

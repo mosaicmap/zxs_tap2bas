@@ -15,12 +15,14 @@ package cz.mp.zxs.tools.tap2bas;
  * @see Tap2bas
  */
 public enum TapBlockType {
+    /** BASIC program. */
     BASIC(0, "BASIC program"),
     NUMBERS(1, "Data: numbers"),
     TEXTS(2, "Data: texts"),
-    CODE_OR_SCREEN(3, "Data: bytes"),   // SCREEN$ / Code / ...
-    
+    /** Binární data. Tj:  SCREEN$, MC rutiny, UDG, Fonty, Sprity, cokoliv jiného. */
+    CODE_OR_SCREEN(3, "Data: binary data "),
     ;
+    
     int num;
     String description;
 
@@ -36,7 +38,13 @@ public enum TapBlockType {
     public String getDescription() {
         return description;
     }
-
+    
+    /**
+     * 
+     * @param num
+     * @return  {@code TapBlockType} nebo {@code null}, pokud pro zadané číslo 
+     *      neodpovídá žídnému blok.
+     */
     public static TapBlockType getByNum(int num) {
         for (TapBlockType type : values()) {
             if (type.getNum() == num) {

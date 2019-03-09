@@ -9,11 +9,14 @@ Without this configuration present, some functionality in the IDE may be limited
     <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
         <configurations>
             <configuration id="-h" profiles=""/>
+            <configuration id="-i Didaktik.tap" profiles=""/>
+            <configuration id="-i Didaktik.tap --analyzeVars" profiles=""/>
+            <configuration id="-i Poklad.tap" profiles=""/>
             <configuration id="-i XmasEve.tap" profiles=""/>
             <configuration id="-i Zlatokop.tap" profiles=""/>
+            <configuration id="-i Zlatokop.tap --analyzeVars" profiles=""/>
             <configuration id="-i Zlatokop.tap --onlyBasic" profiles=""/>
             <configuration id="-v" profiles=""/>
-            <configuration id="-i Poklad.tap" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>
