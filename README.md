@@ -19,8 +19,8 @@ And for more information about ZX Spectrum see article
 - Java 7 or newer
 
 ### How to built
-1. install *Java SE Development Kit (JDK)*, 
-2. install *Apache Maven*, install *Netbeans IDE*
+1. install *Java SE Development Kit (JDK)*, install *Apache Maven*
+2. install *Netbeans IDE*
 3. open project in *Netbeans*.
 4. be sure you are connected to the Internet
 5. select *Default config*
