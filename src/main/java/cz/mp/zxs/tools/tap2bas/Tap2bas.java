@@ -178,7 +178,7 @@ public class Tap2bas {
 
                 int typeNum = tapContent.read();
                 typeFromHeader = TapBlockType.getByNum(typeNum);
-                log.debug("--- block type = " + typeFromHeader.description);
+                log.debug("--- block type = " + typeFromHeader);
                 if (typeFromHeader == null) {
                     throw new InvalidTapException(
                             "unknown type: 0x" + Integer.toHexString(typeNum));
