@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Pokorný
  * @see InvalidTapException
- * @see ByteArrayData
+ * @see TapByteArrayData
  */
 public class Tap2bas {
     private static final Logger log = LoggerFactory.getLogger(Tap2bas.class);
@@ -837,6 +837,7 @@ public class Tap2bas {
     /**
      * 
      * @param tapContent  toto bude analyzováno
+     * @throws IllegalArgumentException
      * @see #setInFile(java.io.File)
      */
     public void setTapContent(byte[] tapContent) {
@@ -885,15 +886,15 @@ public class Tap2bas {
         return fout;
     }
 
-    /**
-     * Vypíše se jako znak.
-     * 
-     * @param dataByte
-     * @throws IOException 
-     */
-    private void writeCharToOut(int dataByte) throws IOException {
-        writeToOut((char)dataByte);
-    }
+//    /**
+//     * Vypíše se jako znak.
+//     * 
+//     * @param dataByte
+//     * @throws IOException 
+//     */
+//    private void writeCharToOut(int dataByte) throws IOException {
+//        writeToOut((char)dataByte);
+//    }
 
     /**
      * Vypíše se jako číslo.

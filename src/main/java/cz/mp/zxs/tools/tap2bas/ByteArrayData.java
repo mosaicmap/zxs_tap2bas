@@ -15,7 +15,7 @@ package cz.mp.zxs.tools.tap2bas;
  * {@linkplain #isLast()}, {@linkplain #getIdx()} a {@linkplain #length()}.
  * 
  * @author Martin Pokorný
- * @see ZxsByteArrayData
+ * @see TapByteArrayData
  */
 public class ByteArrayData {
     
