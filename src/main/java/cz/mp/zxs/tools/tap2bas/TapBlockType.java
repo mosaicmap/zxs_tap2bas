@@ -20,7 +20,7 @@ public enum TapBlockType {
     NUMBERS(1, "Data: numbers"),
     TEXTS(2, "Data: texts"),
     /** Binární data. Tj:  SCREEN$, MC rutiny, UDG, Fonty, Sprity, cokoliv jiného. */
-    CODE_OR_SCREEN(3, "Data: binary data "),
+    BINARY_DATA(3, "Data: binary data "),
     ;
     
     int num;

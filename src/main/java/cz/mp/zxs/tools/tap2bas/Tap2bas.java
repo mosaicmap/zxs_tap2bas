@@ -352,7 +352,9 @@ public class Tap2bas {
                 
                 int varsLength = 
                         dataLenWoParity - (tapContent.getIdx() - startIdx);
-                if (onlyBasic) {    // přeskočit VARS
+
+                // přeskočit VARS ?
+                if (onlyBasic || analyzeVars == false) {    
                     tapContent.skip(varsLength);
                     
                     if (fout != null) {
@@ -360,9 +362,12 @@ public class Tap2bas {
                     }                
                     break;
                 }
-                
+
+                // analyzovat oblast VARS :
+
                 writeToOut("--- table of variables (VARS) -- hexdump: \n");                
-                // VARS jen jako hexdump;  (decdump není užitečný)
+
+                // 1. VARS jen jako hexdump;
                 String hexDump = tapContent.readBlockReturnAsHexDump(varsLength);
                 writeToOut("    length = ");
                 writeIntToOut(varsLength);
@@ -371,25 +376,23 @@ public class Tap2bas {
                 if (fout != null) {
                     fout.flush();
                 }                
-                
-                if (analyzeVars) {
-                    log.info("analyzeVars");
-                    // VARS znovu, ale tentokrát jako analýza
-                    writeToOut("--- table of variables (VARS) -- analyzed: \n");
-                    tapContent.back(varsLength);
 
-                    boolean validTable = analyzeVarsTable(varsLength);
-                    if (!validTable) {                    
-                        log.info("!validTable");
-                        // NE: throw new InvalidTapException("Invalid table of variables");
-                        writeToOut("ERROR: Invalid table of variables");
-                        // (posun idx v tapContent v metodě analyzeVarsTable)
-                    }
+                log.info("analyzeVars");
+                // 2. VARS znovu, ale tentokrát jako analýza
+                writeToOut("--- table of variables (VARS) -- analyzed: \n");
+                tapContent.back(varsLength);
 
-                    if (fout != null) {
-                        fout.flush();
-                    }                
+                boolean validTable = analyzeVarsTable(varsLength);
+                if (!validTable) {                    
+                    log.info("!validTable");
+                    // NE: throw new InvalidTapException("Invalid table of variables");
+                    writeToOut("ERROR: Invalid table of variables");
+                    // (posun idx v tapContent v metodě analyzeVarsTable)
                 }
+
+                if (fout != null) {
+                    fout.flush();
+                }                
                 
                 break;   // (tabulka proměnných je na konci, po analýze skončit)
             }

@@ -29,7 +29,7 @@ public class TapBlockTypeTest {
         assertEquals(TapBlockType.TEXTS, result);
 
         result = TapBlockType.getByNum(3);
-        assertEquals(TapBlockType.CODE_OR_SCREEN, result);
+        assertEquals(TapBlockType.BINARY_DATA, result);
 
         result = TapBlockType.getByNum(4);
         assertNull(result);

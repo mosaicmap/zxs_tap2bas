@@ -17,6 +17,7 @@ Without this configuration present, some functionality in the IDE may be limited
             <configuration id="-i Zlatokop.tap --analyzeVars" profiles=""/>
             <configuration id="-i Zlatokop.tap --onlyBasic" profiles=""/>
             <configuration id="-v" profiles=""/>
+            <configuration id="-i PacMan.tap" profiles=""/>
         </configurations>
     </config-data>
 </project-shared-configuration>
