@@ -14,6 +14,8 @@ package cz.mp.zxs.tools.tap2bas;
  */
 public class InvalidTapException extends Exception {
 
+    private static final long serialVersionUID = -1026870137787052087L;
+
     public InvalidTapException(String message) {
         super(message);
     }
