@@ -166,7 +166,7 @@ public final class Tap2basCli {
                 .build();
         options.addOption(analyzeVars);                
         
-        // --extractScr file
+        // TODO --extractScrs file
     }
     
     /**
@@ -181,7 +181,7 @@ public final class Tap2basCli {
                        
             if (commandLine.getOptions().length == 0) {     // žádné parametry
                 printHelp();
-                exitWithError("no program options", RESULT_ERR_OPTS);
+                exitWithError("missing program options", RESULT_ERR_OPTS);
             }
             
             if (commandLine.hasOption("h")) {

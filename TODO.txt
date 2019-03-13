@@ -2,6 +2,7 @@
 
 - volba pro extrakci SCR souboru(souborů), pokud v TAP je(jsou)
   (pozná se podle přesné délky a podle adresy (param v hlavičce))
+    --extractScrs file
 
 ? lokalizované texty ze souboru .properties (EN,CZ)
 
