@@ -159,17 +159,21 @@ public class Tap2bas {
 
         tapContent.begin();
         while (! tapContent.lastWasReaded()) {
+            int startOfBlockIdx = tapContent.getIdx();
             int blockLen = tapContent.readLsbMSB();
             //log.debug("blockLen = " + blockLen);
+            
             if (blockLen != DEFAULT_HEADER_SIZE) {
                 // (chyba mi většinou vznikala pokud se do analýzy VARS 
                 //  začlenila i následují data. Teď se při chybě VARS 
-                //  posunuje index v tapConten na správné místo)
-                log.warn("Invalid header size. blockLen = " + blockLen);
+                //  posunuje index v tapConten na správné místo)                
+                String indexInfo = "index = " + startOfBlockIdx + " (0x" + Integer.toHexString(startOfBlockIdx) + ")";
+                String blockLenInfo = "blockLen = " + blockLen + " (0x" + Integer.toHexString(blockLen) + ")";
+                log.warn("Invalid header size. " + blockLenInfo + "; " + indexInfo);
                 if (!onlyBasic) {
-                    writeToOut("\nERROR: Invalid header size. blockLen = " + blockLen);
+                    writeToOut("\nERROR: Invalid header size. " + blockLen + "; " + indexInfo);
                 }
-                throw new InvalidTapException("Invalid header size. blockLen = " + blockLen);
+                throw new InvalidTapException("Invalid header size. " + blockLen + "; " + indexInfo);
             }
                     
             TapBlockType typeFromHeader;
