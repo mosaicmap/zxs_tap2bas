@@ -1,0 +1,37 @@
+                
+PacMan.tap
+
+
+PAC-MAN, 155 B, 19368 B  
+
+----
+block type     = BASIC (0)
+headerBlockLen = 19
+header data:
+  name    = PAC-MAN
+  start line number  = 1
+  VARS at = 53
+  dataLen = 153
+dataBlockLen    = 155  0x9B       -- za tím následuje  0x77 0x7F
+startOfBlockIdx = 0
+endOfBlockIdx   = 178
+totalBlockLen   = 178
+
+bloky:  basic PAC-MAN;  mc loader?;  SCREEN$?;  mc něco?   M/CODE
+    -- SCREEN$ má mít velikost 6912 B  = 0x1B00    001B v LSB MSB                    
+
+
+----
+BASIC blok: 
+1 RANDOMIZE USR (PEEK 23635+256*PEEK 23636+91)
+
+potom neplatný VARS ?? 100 znaků         od 0x4C
+0000: aa fb 66 9d f3 2e dd 89  89 80 7c 87 fb a0 88 76  ..f.......|....v
+0010: fe 89 70 35 4d 21 b6 36  b6 b6 a0 96 36 f3 2e a7  ..p5M!.6....6...
+0020: 98 37 cb 99 5f f6 f3 ed  56 fd 54 fd 5d 06 25 eb  .7.._...V.T.].%.
+0030: 11 19 00 19 5e 23 56 dd  62 dd 6b dd 7e 7f 21 35  ....^#V.b.k.~.!5
+0040: 00 19 e5 ae 77 23 10 fb  a6 c0 77 dd ae 7f dd 77  ....w#....w....w
+0050: 7f dd 23 10 f6 dd 19 e3  37 dd e9 db fe 1f e6 20  ..#.....7...... 
+0060: 4f bf dd e9                                       O...
+    -- toto je hádám nějaký loader který se musí načíst do paměti s BASIC blokem
+ 
