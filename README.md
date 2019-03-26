@@ -28,7 +28,7 @@ And for more information about ZX Spectrum see article
 7. wait until *maven* download all dependencies and plugins. Then *maven* will create the build.
 8. result should be in the directory: *target/dist-package*.
 
-Instead of steps 2 - 7 you can simply run command: >*mvn package*
+- Note: instead of steps 2, 3, 5, 6 you can simply run this command:  `mvn package`
 
 -----
 
@@ -42,7 +42,8 @@ Format is compatible with tool called **bas2tap**.
 
 * pound symbol<br>{pound}
 
-* mosaic graphics symbols<br>{-1}, {-2}, ..., {-8}<br>{+1}, {+2}, ..., {+8}   (mosaic graphics symbol with shift)
+* mosaic graphics symbols<br>{-1}, {-2}, ..., {-8}<br>{+1}, {+2}, ..., {+8}   (mosaic graphics symbol with shift)<br>
+![bas2tap_mosaic_graphics_screenshot](src/graphics/bas2tap_mosaic_graphics_1.png)
 
 * control (*invisible*) characters for text attributes settings
 <br>{INK c}
