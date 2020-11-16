@@ -23,8 +23,12 @@ hs_err_pid*
 _tmp/
 _temp/
 _info_tmp/
+_info/
 _chyby/
 
+# IDE
+nbproject/
+.vscode/
 .settings/
 .project
 .classpath
